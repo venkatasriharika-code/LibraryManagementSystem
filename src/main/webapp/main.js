@@ -594,53 +594,12 @@
             var s = e.target.closest ? e.target.closest('.spine') : null;
             if (s) window.location.href = 'viewBooks';
         });
-    }
-
-    /* ---------- Batch add: sequential cover lookup through the existing safe add flow ---------- */
-    function bulkAdd() {
-        var form = $('#bulkAddForm');
-        if (!form) return;
-        var list = $('#bulkBooks');
-        var button = $('#bulkAddButton');
-        var status = $('#bulkAddStatus');
-        form.addEventListener('submit', async function (event) {
-            event.preventDefault();
-            var rows = list.value.split(/\r?\n/).map(function (line) { return line.trim(); }).filter(Boolean);
-            if (!rows.length) { status.textContent = 'Paste at least one book first.'; return; }
-            if (rows.length > 10) { status.textContent = 'Please add up to 10 books per batch.'; return; }
-            var parsed = rows.map(function (row) {
-                var fields = row.split('|').map(function (field) { return field.trim(); });
-                return { title: fields[0] || '', author: fields[1] || '', category: fields[2] || '', copies: fields[3] || '1' };
-            });
-            if (parsed.some(function (book) { return !book.title || !book.author || !/^\d+$/.test(book.copies); })) {
-                status.textContent = 'Each line needs a title and author; copies must be a whole number of zero or more.';
-                return;
-            }
-            button.disabled = true;
-            var added = 0, skipped = 0, failed = 0;
-            for (var i = 0; i < parsed.length; i++) {
-                var book = parsed[i];
-                status.textContent = 'Checking cover ' + (i + 1) + ' of ' + parsed.length + ': ' + book.title;
-                try {
-                    var body = new URLSearchParams({ title: book.title, author: book.author, category: book.category, availableCopies: book.copies });
-                    var response = await fetch(new URL('addBook', window.location.href), { method: 'POST', body: body, credentials: 'same-origin', redirect: 'follow' });
-                    var finalUrl = new URL(response.url);
-                    if (finalUrl.searchParams.get('added') === '1') added++;
-                    else if (finalUrl.searchParams.get('notice') === 'cover-not-found') skipped++;
-                    else failed++;
-                } catch (error) { failed++; }
-            }
-            status.textContent = 'Finished: ' + added + ' added, ' + skipped + ' skipped (no real cover found), ' + failed + ' failed.';
-            button.disabled = false;
-            if (added) toast(added + ' book' + (added === 1 ? '' : 's') + ' added to your collection.');
-        });
-    }
-    /* ---------- INIT ---------- */
+    }`r`n/* ---------- INIT ---------- */
     function init() {
         // each module runs separately so one failure can never break the rest
         [splitTitle, buildShelves, shelfEntrance, shelfParallax, particles, scrollUI, mobileMenu,
             reveals, tiltCards, tabs, coverUpload, forms,
-            collectionInteractions, spines, bulkAdd].forEach(function (fn) {
+            collectionInteractions, spines].forEach(function (fn) {
             try { fn(); } catch (err) { if (window.console) console.error('LibraryHub: ' + fn.name + ' failed', err); }
         });
 
