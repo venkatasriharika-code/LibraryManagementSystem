@@ -1,0 +1,14 @@
+﻿services:
+  - type: web
+    name: library-management-system
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    envVars:
+      - key: LIBRARY_DB_URL
+        sync: false
+      - key: LIBRARY_DB_USER
+        sync: false
+      - key: LIBRARY_DB_PASSWORD
+        sync: false

@@ -1,0 +1,17 @@
+# Eclipse / Java output
+.metadata/
+.settings/
+build/
+target/
+*.class
+
+# Local database secrets and local dumps
+/database/local.properties
+/database/*.sql.gz
+.env
+.env.*
+!.env.example
+
+# IDE/OS noise
+.DS_Store
+Thumbs.db
